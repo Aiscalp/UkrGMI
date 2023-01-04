@@ -1,12 +1,11 @@
 <template>
   <h2>Articles List</h2>
-  <div class="navbar__btns">
-    <button class="btn" @click="sortList('id')">Sort by ID</button>
-    <button class="btn" @click="sortList('title')">Sort by Title</button>
-  </div>
+
+  <br />
+  <input v-model="filters" placeholder="Search..." />
+  <br />
   <div class="post" v-for="post in paginatedData" :key="post.id">
     <div>
-      <div>{{ post.id }}</div>
       <div><strong>Article Title:</strong> {{ post.title }}</div>
       <div><strong>Article Body:</strong> {{ post.body }}</div>
       <div>{{}} Comments</div>
@@ -33,28 +32,29 @@ import { ArticlesModel, CommentsModel } from "@/models/ArticlesModel";
 const posts = ref<Array<ArticlesModel>>(
   await useArticlesService().getArticles()
 );
-// Sort by ...
-const sortedById = ref(true);
-const sortedData = posts;
-function sortList(sortBy: string) {
-  if (sortedById.value) {
-    sortedData.value.sort((x, y) => (y[sortBy] > x[sortBy] ? -1 : 1));
-    sortedById.value = false;
+// Filter by
+const filters = ref("");
+const filteredData = computed(() => {
+  if (!filters.value) {
+    return posts.value;
   } else {
-    sortedData.value.sort((x, y) => (y[sortBy] < x[sortBy] ? -1 : 1));
-    sortedById.value = true;
+    const filterRe = new RegExp(filters.value, "i");
+    return posts.value.filter((item) => {
+      return item.title.match(filterRe);
+    });
   }
-}
+});
+
 // Pagination
 const pageNumber = ref(1);
 const pageSize = 10;
 const pages = computed(() => {
-  return Math.ceil(posts.value.length / pageSize);
+  return Math.ceil(filteredData.value.length / pageSize);
 });
 const paginatedData = computed(() => {
   let from = (pageNumber.value - 1) * pageSize;
   let to = from + pageSize;
-  return posts.value.slice(from, to);
+  return filteredData.value.slice(from, to);
 });
 function pageClick(page: number) {
   pageNumber.value = page;
@@ -109,7 +109,7 @@ h2 {
   color: white;
 }
 
-select {
+input {
   box-sizing: border-box;
   margin-bottom: 25px;
   margin-right: 25px;
@@ -117,5 +117,7 @@ select {
   background-color: whitesmoke;
   box-shadow: 2px 2px 4px gray;
   border-radius: 5px;
+  color: black;
+  border: 1px solid darkgray;
 }
 </style>

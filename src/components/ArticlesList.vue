@@ -1,13 +1,14 @@
 <template>
   <h2>Articles List</h2>
-  <!-- <select v-model="modelValue" @change="changeOption">
-    <option disabled value="">Sort List by...</option>
-    <option>Name</option>
-  </select> -->
+  <div class="navbar__btns">
+    <button class="btn" @click="sortList('id')">Sort by ID</button>
+    <button class="btn" @click="sortList('title')">Sort by Title</button>
+  </div>
   <div class="post" v-for="post in paginatedData" :key="post.id">
     <div>
-      <div><strong>Name:</strong> {{ post.title }}</div>
-      <div><strong>Description:</strong> {{ post.body }}</div>
+      <div>{{ post.id }}</div>
+      <div><strong>Article Title:</strong> {{ post.title }}</div>
+      <div><strong>Article Body:</strong> {{ post.body }}</div>
       <div>{{}} Comments</div>
     </div>
   </div>
@@ -32,6 +33,18 @@ import { ArticlesModel } from "@/models/ArticlesModel";
 const posts = ref<Array<ArticlesModel>>(
   await useArticlesService().getArticles()
 );
+// Sort by ...
+const sortedById = ref(true);
+const sortedData = posts;
+function sortList(sortBy: string) {
+  if (sortedById.value) {
+    sortedData.value.sort((x, y) => (x[sortBy] > y[sortBy] ? -1 : 1));
+    sortedById.value = false;
+  } else {
+    sortedData.value.sort((x, y) => (x[sortBy] < y[sortBy] ? -1 : 1));
+    sortedById.value = true;
+  }
+}
 // Pagination
 const pageNumber = ref(1);
 const pageSize = 10;
@@ -46,7 +59,6 @@ const paginatedData = computed(() => {
 function pageClick(page: number) {
   pageNumber.value = page;
 }
-// Sort by name
 </script>
 
 <style scoped>
@@ -94,5 +106,15 @@ h2 {
   background: #aeaeae;
   cursor: pointer;
   color: white;
+}
+
+select {
+  box-sizing: border-box;
+  margin-bottom: 25px;
+  margin-right: 25px;
+  margin-left: 5px;
+  background-color: whitesmoke;
+  box-shadow: 2px 2px 4px gray;
+  border-radius: 5px;
 }
 </style>

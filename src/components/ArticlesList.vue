@@ -2,8 +2,13 @@
   <h2>Articles List</h2>
 
   <br />
-  <input v-model="filters" placeholder="Search..." />
+  <input v-model="filters" placeholder="Filter..." />
   <br />
+  <div>
+    <strong v-if="!filteredData.length" style="color: red"
+      >We couldn't find any matching results.</strong
+    >
+  </div>
   <div class="post" v-for="post in paginatedData" :key="post.id">
     <div>
       <div><strong>Article Title:</strong> {{ post.title }}</div>
@@ -110,10 +115,8 @@ h2 {
 }
 
 input {
+  padding: 3px;
   box-sizing: border-box;
-  margin-bottom: 25px;
-  margin-right: 25px;
-  margin-left: 5px;
   background-color: whitesmoke;
   box-shadow: 2px 2px 4px gray;
   border-radius: 5px;

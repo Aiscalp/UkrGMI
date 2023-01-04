@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useArticlesService } from "@/services/useArticlesService";
-import { ArticlesModel } from "@/models/ArticlesModel";
+import { ArticlesModel, CommentsModel } from "@/models/ArticlesModel";
 // Articles list
 const posts = ref<Array<ArticlesModel>>(
   await useArticlesService().getArticles()
@@ -38,10 +38,10 @@ const sortedById = ref(true);
 const sortedData = posts;
 function sortList(sortBy: string) {
   if (sortedById.value) {
-    sortedData.value.sort((x, y) => (x[sortBy] > y[sortBy] ? -1 : 1));
+    sortedData.value.sort((x, y) => (y[sortBy] > x[sortBy] ? -1 : 1));
     sortedById.value = false;
   } else {
-    sortedData.value.sort((x, y) => (x[sortBy] < y[sortBy] ? -1 : 1));
+    sortedData.value.sort((x, y) => (y[sortBy] < x[sortBy] ? -1 : 1));
     sortedById.value = true;
   }
 }
@@ -59,6 +59,7 @@ const paginatedData = computed(() => {
 function pageClick(page: number) {
   pageNumber.value = page;
 }
+//comments amount
 </script>
 
 <style scoped>
